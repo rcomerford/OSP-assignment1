@@ -7,6 +7,7 @@
 
 // initialise static variables
 ofstream writer::out;
+deque<string> writer::queue;
 
 void writer::init(const std::string& file_name)
 {
@@ -24,14 +25,27 @@ void writer::run()
 
 // TODO implement
 void* writer::runner(void* arg)
-{ 
-    return nullptr; 
+{
+    while(!queue.empty())
+    {
+        string next_string = queue.front();
+        out << next_string;
+        queue.pop_front();  
+
+        // output endline char for every line except the last.
+        if(!queue.empty())
+        {
+            out << endl;
+        }
+    }
+
+    return nullptr;
 }
 
-// TODO implement
 void writer::append(const std::string& line)
 {
-    // lines coming in successfully :)
+    cout << "Appended line" << endl;
+    queue.push_back(line);  
 }
 
 // TODO implement
