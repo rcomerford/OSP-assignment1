@@ -34,7 +34,7 @@ bool isNumber(const string& s)
 // TODO implement
 bool isValidPath()
 {
-
+    return false;
 }
 
 int main(int argc, char** argv) 

@@ -1,16 +1,23 @@
 # TODO use variables
 
+COPIER_DIR 	 := ./copier_files
+MTCOPIER_DIR := ./mtcopier_files
+
+.default: all
+
+all: copier mtcopier
+
 clean:
-	rm -f copier mtcopier copier_files/*.o mtcopier_files/*.o *.o
+	rm -rf copier mtcopier $(COPIER_DIR)/*.o $(MTCOPIER_DIR)/*.o *.o
 
-copier: copier_files/main.o copier_files/reader.o copier_files/writer.o
+copier: $(COPIER_DIR)/main.o $(COPIER_DIR)/reader.o $(COPIER_DIR)/writer.o
 	g++ -Wall -Werror -std=c++20 -g -o $@ $^
 
-mtcopier: mtcopier_files/main.o mtcopier_files/reader.o mtcopier_files/writer.o
+mtcopier: $(MTCOPIER_DIR)/main.o $(MTCOPIER_DIR)/reader.o $(MTCOPIER_DIR)/writer.o
 	g++ -Wall -Werror -std=c++20 -g -o $@ $^
 
-copier_files/%.o: %.cpp
+$(COPIER_DIR)/%.o: %.cpp
 	g++ -Wall -Werror -std=c++20 -g -c $^
 
-mtcopier_files/%.o: %.cpp
+$(MTCOPIER_DIR)/%.o: %.cpp
 	g++ -Wall -Werror -std=c++20 -g -c -lpthread $^
