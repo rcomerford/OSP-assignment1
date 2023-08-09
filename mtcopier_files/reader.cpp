@@ -40,11 +40,13 @@ void* reader::runner(void* arg)
 
 bool reader::read(string& line)
 {
+    bool success = true;
     pthread_mutex_lock(&read_lock);  
-    bool success = false;
 
-    if(getline(in, line))
-        success = true;
+    if(!getline(in, line))
+        success = false;
+    // else
+        // cout << "Read: " << line << '\n';
 
     pthread_mutex_unlock(&read_lock);  
     return success;

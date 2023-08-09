@@ -8,8 +8,16 @@
 // initialise static variables
 ofstream writer::out;
 deque<string> writer::queue;
+
 pthread_mutex_t writer::queue_lock;
+
+pthread_mutex_t writer::append_lock;
+pthread_mutex_t writer::pop_lock;
+
 pthread_mutex_t writer::write_lock;
+
+
+pthread_cond_t writer::queue_not_empty;
 
 void writer::init(const std::string& file_name)
 {
@@ -18,6 +26,9 @@ void writer::init(const std::string& file_name)
 
     // create mutex
     pthread_mutex_init(&queue_lock, nullptr);
+    pthread_mutex_init(&write_lock, nullptr);
+
+    // pthread_cond_init() 
 }
 
 pthread_t writer::run()
@@ -32,26 +43,40 @@ pthread_t writer::run()
 
 void* writer::runner(void* arg)
 {
-    string next_string = writer::pop();
-    writer::write(next_string);
+    for(int i = 0; i < 10000; ++i)
+    {
+        string next_string = writer::pop();
+        writer::write(next_string);
+    }
 
-    cout << "done reader!\n";
+    cout << "done writer!\n";
     return nullptr;
 }
 
 void writer::append(const string& line)
 {
+    pthread_mutex_lock(&append_lock);
     pthread_mutex_lock(&queue_lock);
 
     queue.push_back(line);
+    // cout << "new queue size: " << queue.size() << '\n';
+    // cout << "queue front: " << queue.front() << '\n';
+    // queue.pop_front();
+    // cout << "queue front: " << queue.front() << '\n';
+    // cout << "new queue back: " << queue.back() << '\n';
 
-    pthread_mutex_unlock(&queue_lock); 
+    pthread_mutex_unlock(&queue_lock);
+    pthread_mutex_unlock(&append_lock); 
 }
 
 
 // CHANGE TO BE LIKE READ WITH THE REFERENCE THANKS I LOVE YOU BYE
 string writer::pop()
 {
+    // pthread_cond_wait(&queue_not_empty, nullptr);
+
+
+    pthread_mutex_lock(&pop_lock);
     pthread_mutex_lock(&queue_lock);
 
     string next_string = "";
@@ -64,7 +89,8 @@ string writer::pop()
 
     // cout << "Popped line: " << std::to_string(queue.size()) << endl;
 
-    pthread_mutex_unlock(&queue_lock); 
+    pthread_mutex_unlock(&queue_lock);
+    pthread_mutex_unlock(&pop_lock);  
 
     return next_string;
 }
@@ -73,12 +99,11 @@ void writer::write(string& line)
 {
     pthread_mutex_lock(&write_lock);  
 
-    // line += "\n";
-
-    // line += '\x0a';
-    // line += '\n';
-
-    out << line;
+    if(line.length() > 0)
+    {
+        out << line << '\n';
+        cout << "Written: " << line << '\n';
+    }
     
     pthread_mutex_unlock(&write_lock);
 }

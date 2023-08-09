@@ -84,6 +84,13 @@ class writer
         */
         static pthread_mutex_t write_lock;
 
+        /**
+         * TODO
+        */
+       static pthread_cond_t queue_not_empty;
+       static pthread_mutex_t append_lock;
+       static pthread_mutex_t pop_lock;
+
 };
 
 #endif // WRITER
