@@ -45,7 +45,7 @@ class writer
         /**
          * Does the setup for and launches the thread.
         */
-        void run();
+        pthread_t run();
 
         /**
          * Appends a line of text to the shared writing queue.
@@ -53,9 +53,14 @@ class writer
         static void append(const string& line);
 
         /**
-         * TODO add explanation??
+         * TODO
         */
-        void setFinished();
+       static string pop();
+
+       /**
+        * TODO
+       */
+      static void write(string& line);
 
     private:
 
@@ -68,6 +73,17 @@ class writer
          * The queue of lines to be written.
         */
         static deque<string> queue;
+
+        /**
+         * TODO add
+        */
+        static pthread_mutex_t queue_lock;
+
+        /**
+         * TODO add
+        */
+        static pthread_mutex_t write_lock;
+
 };
 
 #endif // WRITER

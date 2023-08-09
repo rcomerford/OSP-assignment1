@@ -28,3 +28,6 @@
 
 # Test files
 tests/
+
+#vscode config
+vscode/

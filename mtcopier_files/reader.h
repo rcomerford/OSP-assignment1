@@ -33,7 +33,12 @@ class reader
 		/**
 		 * Does the setup for and launches the thread.
 		 */
-		void run();
+		pthread_t run();
+
+		/**
+		 * TODO add
+		*/
+		static bool read(string& line);
 
 	private:
 
@@ -41,6 +46,11 @@ class reader
          * The stream doing the reading.
         */
 		static std::ifstream in;
+
+        /**
+         * TODO add
+        */
+        static pthread_mutex_t read_lock;
 };
 
 #endif // READER

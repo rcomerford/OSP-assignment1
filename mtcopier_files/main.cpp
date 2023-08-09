@@ -12,14 +12,16 @@ using std::string;
 using std::atoi;
 using std::isdigit;
 
-// global variables due to using cleanup() function for management
-reader* readers;
-writer* writers;
+// global variables
+pthread_t* reader_threads;
+pthread_t* writer_threads;
 
 void cleanup() 
 {
-    delete[] readers;
-    delete[] writers;
+    // if(reader_threads != nullptr)
+    //     delete[] reader_threads;
+    // if(writer_threads != nullptr)
+    //     delete[] writer_threads;
 }
 
 // TODO rewrite??
@@ -47,28 +49,31 @@ int main(int argc, char** argv)
     else if(!isNumber(argv[1]) || atoi(argv[1]) < 25 || atoi(argv[1]) > 100)
         cout << "<numthreads> must be an INTEGER between 25 and 100." << endl;
     // else if
-    //     // CHECK IF argv[2] AND argv[3] ARE VALID SYSTEM PATHS
+        // TODO CHECK IF FILE OPENS LOL
     else
     {
-        // valid command lune arguments
+        // valid command line arguments
         const int NUM_THREADS = atoi(argv[1]);
         string input_file_name = argv[2];
         string output_file_name = argv[3];
 
-        readers = new reader[NUM_THREADS];
-        writers = new writer[NUM_THREADS];
-
+        // initialise thread classes
         reader::init(input_file_name);
         writer::init(output_file_name);
 
-        // create threads for reader & writer
+        // initialise arrays
+        reader_threads = new pthread_t[NUM_THREADS];
+        writer_threads = new pthread_t[NUM_THREADS];
+
+        // create threads for each reader & writer
+        // adding each thread to the global variable
         for(int i = 0; i < (NUM_THREADS - 1); i++)
         {
-            readers[i] = reader();
-            readers[i].run();
+            reader new_reader = reader();
+            reader_threads[i] = new_reader.run();
 
-            writers[i] = writer();
-            writers[i].run();
+            writer new_writer = writer();
+            writer_threads[i] = new_writer.run();
         }
 
         /**
@@ -76,6 +81,14 @@ int main(int argc, char** argv)
          * section on avoiding busy waiting on the assignment specification to see
          * what need to be done here
         */
+
+        for(int i = 0; i < (NUM_THREADS - 1); i++)
+        {
+            pthread_join(reader_threads[i], NULL);
+            pthread_join(writer_threads[i], NULL);
+        }
+
+        cout << "DONE!" << endl;
     }
 
     return EXIT_SUCCESS;

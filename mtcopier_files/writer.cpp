@@ -8,48 +8,77 @@
 // initialise static variables
 ofstream writer::out;
 deque<string> writer::queue;
+pthread_mutex_t writer::queue_lock;
+pthread_mutex_t writer::write_lock;
 
 void writer::init(const std::string& file_name)
 {
     cout << "Writers initialised with file name: " << file_name << endl;
     out.open(file_name.c_str(), ios::out);
+
+    // create mutex
+    pthread_mutex_init(&queue_lock, nullptr);
 }
 
-void writer::run()
+pthread_t writer::run()
 {
     // create new thread
     pthread_t pt_id;
-    pthread_create(&pt_id, NULL, &runner, NULL);
     cout << "Created writer thread with ID: " << pt_id << endl;
+    pthread_create(&pt_id, NULL, &runner, NULL);
+    
+    return pt_id;
 }
 
-// TODO implement
 void* writer::runner(void* arg)
 {
-    while(!queue.empty())
-    {
-        string next_string = queue.front();
-        out << next_string;
-        queue.pop_front();  
+    string next_string = writer::pop();
+    writer::write(next_string);
 
-        // output endline char for every line except the last.
-        if(!queue.empty())
-        {
-            out << endl;
-        }
-    }
-
+    cout << "done reader!\n";
     return nullptr;
 }
 
-void writer::append(const std::string& line)
+void writer::append(const string& line)
 {
-    cout << "Appended line" << endl;
-    queue.push_back(line);  
+    pthread_mutex_lock(&queue_lock);
+
+    queue.push_back(line);
+
+    pthread_mutex_unlock(&queue_lock); 
 }
 
-// TODO implement
-void writer::setFinished()
+
+// CHANGE TO BE LIKE READ WITH THE REFERENCE THANKS I LOVE YOU BYE
+string writer::pop()
 {
-    // what is this fn for??
+    pthread_mutex_lock(&queue_lock);
+
+    string next_string = "";
+
+    if(!queue.empty())
+    {
+        next_string = queue.front();
+        queue.pop_front();
+    }
+
+    // cout << "Popped line: " << std::to_string(queue.size()) << endl;
+
+    pthread_mutex_unlock(&queue_lock); 
+
+    return next_string;
+}
+
+void writer::write(string& line)
+{
+    pthread_mutex_lock(&write_lock);  
+
+    // line += "\n";
+
+    // line += '\x0a';
+    // line += '\n';
+
+    out << line;
+    
+    pthread_mutex_unlock(&write_lock);
 }
