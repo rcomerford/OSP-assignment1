@@ -1,5 +1,3 @@
-# TODO use variables
-
 COPIER_DIR 	 := ./copier_files
 MTCOPIER_DIR := ./mtcopier_files
 

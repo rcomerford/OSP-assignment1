@@ -4,8 +4,6 @@
 
 #include "reader.h"
 
-
-
 reader::reader(const string& FILE_NAME, writer& MAIN_WRITER) : the_writer(MAIN_WRITER)
 {
     cout << "READER INIT:\tInitialised with file name: " << FILE_NAME << '\n';
@@ -23,6 +21,11 @@ void reader::run()
             handleLine(current_line);
 
         in.close();
+    } 
+    else
+    {
+        // if file failed to open
+        cout << "ERROR:\t" << "Files failed to open." << '\n';
     }
 }
 

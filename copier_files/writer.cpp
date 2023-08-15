@@ -4,14 +4,10 @@
 
 #include "writer.h"
 
-writer::writer(const string& file_name)
+writer::writer(const string& FILE_NAME)
 {
-    cout << "Writer created with file name: " << file_name << endl;
-    
-    out.open(file_name); 
-    // TODO fix so that it writes to any system path
-    // current behaviour means no writing is done is
-    // file name is not in the current directory.
+    cout << "WRITER INIT:\tInitialised with file name: " << FILE_NAME << '\n';
+    out.open(FILE_NAME);
 }
 
 void writer::run()
@@ -33,5 +29,5 @@ void writer::writeNextLine()
 
     // output endline char for every line except the last.
     if(!queue.empty())
-        out << endl;
+        out << '\n';
 }
