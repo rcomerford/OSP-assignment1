@@ -4,10 +4,12 @@
 
 #include "reader.h"
 
-reader::reader(const string& file_name, writer& my_writer) : the_writer(my_writer)
+
+
+reader::reader(const string& FILE_NAME, writer& MAIN_WRITER) : the_writer(MAIN_WRITER)
 {
-    cout << "Reader created with file name: " << file_name << endl;
-    in.open(file_name.c_str(), std::ios::in);
+    cout << "READER INIT:\tInitialised with file name: " << FILE_NAME << '\n';
+    in.open(FILE_NAME.c_str(), std::ios::in);
 }
 
 void reader::run()

@@ -23,12 +23,9 @@ class reader
 		/**
 		 * Initialise the shared data for the class.
 		 */
-		static void init(const string &name);
-
-		/**
-		 * Thread function which does the actual reading from the input file.
-		 **/
-		static void *runner(void *);
+		static bool init(
+			const string& FILE_NAME, 
+			const bool& IS_DEBUG_MODE);
 
 		/**
 		 * Does the setup for and launches the thread.
@@ -36,21 +33,29 @@ class reader
 		pthread_t run();
 
 		/**
-		 * TODO add
-		*/
-		static bool read(string& line);
+		 * Thread function which does the actual reading (producing).
+		 **/
+		static void *runner(void *);
+
+        /**
+         * Public mutexes to facilitate thread synchronisation.
+        */
+        static pthread_mutex_t queue_lock;
+		static pthread_cond_t item_removed_signal;
+		static pthread_cond_t item_added_signal;
 
 	private:
+
+		/**
+		 * Dictates whether the program threads output status updates. 
+		*/
+		static bool IS_DEBUG_MODE;
 
         /**
          * The stream doing the reading.
         */
-		static std::ifstream in;
+		static ifstream in;
 
-        /**
-         * TODO add
-        */
-        static pthread_mutex_t read_lock;
 };
 
 #endif // READER

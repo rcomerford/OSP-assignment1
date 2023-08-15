@@ -5,105 +5,99 @@
 #include "writer.h"
 #include "reader.h"
 
+// "constant" static variables
+bool writer::IS_DEBUG_MODE;
+unsigned writer::MAX_QUEUE_SIZE;
+
 // initialise static variables
 ofstream writer::out;
 deque<string> writer::queue;
+unsigned writer::queue_size = 0;
 
-pthread_mutex_t writer::queue_lock;
+bool writer::reading_finished = false;
 
-pthread_mutex_t writer::append_lock;
-pthread_mutex_t writer::pop_lock;
-
-pthread_mutex_t writer::write_lock;
-
-
-pthread_cond_t writer::queue_not_empty;
-
-void writer::init(const std::string& file_name)
+bool writer::init(const std::string& FILE_NAME, const unsigned& MAX_QUEUE_ARG, const bool& DEBUG_MODE_ARG)
 {
-    cout << "Writers initialised with file name: " << file_name << endl;
-    out.open(file_name.c_str(), ios::out);
+    // static variables
+    MAX_QUEUE_SIZE = MAX_QUEUE_ARG;
+    IS_DEBUG_MODE = DEBUG_MODE_ARG;
+    if(IS_DEBUG_MODE) cout << "WRITER INIT:\tInitialised with file name: " << FILE_NAME << '\n';
 
-    // create mutex
-    pthread_mutex_init(&queue_lock, nullptr);
-    pthread_mutex_init(&write_lock, nullptr);
-
-    // pthread_cond_init() 
+    // attempt to open file and return status
+    out.open(FILE_NAME.c_str());
+    if(!out) return false;
+    return true;
 }
 
 pthread_t writer::run()
 {
     // create new thread
     pthread_t pt_id;
-    cout << "Created writer thread with ID: " << pt_id << endl;
-    pthread_create(&pt_id, NULL, &runner, NULL);
-    
+    if(IS_DEBUG_MODE) cout << "WRITER THREAD:\tCreated thread with ID: " << pt_id << '\n';
+    pthread_create(&pt_id, nullptr, &runner, nullptr);
     return pt_id;
 }
 
 void* writer::runner(void* arg)
 {
-    for(int i = 0; i < 10000; ++i)
+    while(true)
     {
-        string next_string = writer::pop();
-        writer::write(next_string);
+        pthread_mutex_lock(&reader::queue_lock);
+        {
+            // if queue is empty, await produced addition
+            while(!reading_finished && writer::is_queue_empty())
+                pthread_cond_wait(&reader::item_added_signal, &reader::queue_lock);
+
+            string line = "";
+
+            if(reading_finished && writer::is_queue_empty())
+            {
+                pthread_mutex_unlock(&reader::queue_lock);
+                break;
+            }
+            else
+            {
+                // write file and remove from queue
+                writer::remove(line);
+                out <<  line;
+            }
+        }
+        pthread_mutex_unlock(&reader::queue_lock);
+
+        // send: something has been removed from the list
+        pthread_cond_signal(&reader::item_removed_signal);
     }
 
-    cout << "done writer!\n";
+    if(IS_DEBUG_MODE) cout << "WRITER THREAD:\tClosing thread with ID: " << pthread_self() << '\n';
     return nullptr;
+}
+
+bool writer::is_queue_full()
+{
+    return queue_size == MAX_QUEUE_SIZE;
+}
+
+bool writer::is_queue_empty()
+{
+    return queue_size == 0;
 }
 
 void writer::append(const string& line)
 {
-    pthread_mutex_lock(&append_lock);
-    pthread_mutex_lock(&queue_lock);
-
     queue.push_back(line);
-    // cout << "new queue size: " << queue.size() << '\n';
-    // cout << "queue front: " << queue.front() << '\n';
-    // queue.pop_front();
-    // cout << "queue front: " << queue.front() << '\n';
-    // cout << "new queue back: " << queue.back() << '\n';
 
-    pthread_mutex_unlock(&queue_lock);
-    pthread_mutex_unlock(&append_lock); 
+    if(IS_DEBUG_MODE) cout << "WRITER THREAD:\tAppended line to queue." << '\n';
+    queue_size++;
 }
 
-
-// CHANGE TO BE LIKE READ WITH THE REFERENCE THANKS I LOVE YOU BYE
-string writer::pop()
+void writer::remove(string& line)
 {
-    // pthread_cond_wait(&queue_not_empty, nullptr);
-
-
-    pthread_mutex_lock(&pop_lock);
-    pthread_mutex_lock(&queue_lock);
-
-    string next_string = "";
-
-    if(!queue.empty())
-    {
-        next_string = queue.front();
-        queue.pop_front();
-    }
-
-    // cout << "Popped line: " << std::to_string(queue.size()) << endl;
-
-    pthread_mutex_unlock(&queue_lock);
-    pthread_mutex_unlock(&pop_lock);  
-
-    return next_string;
+    line = queue.front();
+    queue.pop_front();
+    queue_size--;
 }
 
-void writer::write(string& line)
+void writer::mark_reading_finished()
 {
-    pthread_mutex_lock(&write_lock);  
-
-    if(line.length() > 0)
-    {
-        out << line << '\n';
-        cout << "Written: " << line << '\n';
-    }
-    
-    pthread_mutex_unlock(&write_lock);
+    reading_finished = true;
 }

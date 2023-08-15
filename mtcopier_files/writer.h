@@ -18,16 +18,6 @@ using std::endl;
 using std::string;
 using std::ios;
 
-/**
- * TODO remove??
- * Please note that methods and data need to be static as there's a
- * variety of information that needs to be coordinated between writers
- * such as locks and other shared data. Also, as the pthread library
- * is a c library, it does not know about classes so runner in particular
- * needs to be static. You can pass in instances into the function as
- * pointers though.
- **/
-
 class writer 
 {
     public:
@@ -35,34 +25,45 @@ class writer
         /**
 		 * Initialise the shared data for the class.
 		 */
-        static void init(const string& file_name);
-
-		/**
-		 * Thread function which does the actual writing to the output file.
-		 **/
-        static void* runner(void*);
+        static bool init(
+            const string& FILE_NAME, 
+            const unsigned& MAX_QUEUE_SIZE, 
+            const bool& IS_DEBUG_MODE);
 
         /**
          * Does the setup for and launches the thread.
         */
         pthread_t run();
 
+		/**
+		 * Thread which does the actual writing (consuming).
+		 **/
+        static void* runner(void*);
+
         /**
-         * Appends a line of text to the shared writing queue.
+         * Queue manipulation.
         */
         static void append(const string& line);
+        static void remove(string& line);
 
         /**
-         * TODO
+         * Queue state.
         */
-       static string pop();
+        static bool is_queue_full();
+        static bool is_queue_empty();
 
-       /**
-        * TODO
-       */
-      static void write(string& line);
+        /*
+         * Reader state.
+        */
+        static bool reading_finished;
+        static void mark_reading_finished();
 
     private:
+
+		/**
+		 * Dictates whether the program threads output status updates. 
+		*/
+		static bool IS_DEBUG_MODE;
 
         /**
          * The output stream doing the writing.
@@ -70,26 +71,11 @@ class writer
         static ofstream out;
 
         /**
-         * The queue of lines to be written.
+         * Related to the queue of lines to be written.
         */
         static deque<string> queue;
-
-        /**
-         * TODO add
-        */
-        static pthread_mutex_t queue_lock;
-
-        /**
-         * TODO add
-        */
-        static pthread_mutex_t write_lock;
-
-        /**
-         * TODO
-        */
-       static pthread_cond_t queue_not_empty;
-       static pthread_mutex_t append_lock;
-       static pthread_mutex_t pop_lock;
+        static unsigned queue_size;
+        static unsigned MAX_QUEUE_SIZE;
 
 };
 
