@@ -42,6 +42,8 @@ pthread_t reader::run()
 
 void* reader::runner(void* arg)
 {
+    string line = "";
+
     while(!writer::reading_finished)
     {
         pthread_mutex_lock(&queue_lock);
@@ -51,7 +53,6 @@ void* reader::runner(void* arg)
                 pthread_cond_wait(&item_removed_signal, &queue_lock);
 
             // read file and add to queue
-            string line = "";
             if(getline(in, line))
             {
                 if(IS_DEBUG_MODE) cout << "READER THREAD:\tRead new line" << '\n';
