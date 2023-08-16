@@ -16,7 +16,7 @@ unsigned writer::queue_size = 0;
 
 bool writer::reading_finished = false;
 
-bool writer::init(const std::string& FILE_NAME, const unsigned& MAX_QUEUE_ARG, const bool& DEBUG_MODE_ARG)
+bool writer::init(const string& FILE_NAME, const unsigned& MAX_QUEUE_ARG, const bool& DEBUG_MODE_ARG)
 {
     // static variables
     MAX_QUEUE_SIZE = MAX_QUEUE_ARG;
@@ -24,7 +24,7 @@ bool writer::init(const std::string& FILE_NAME, const unsigned& MAX_QUEUE_ARG, c
     if(IS_DEBUG_MODE) cout << "WRITER INIT:\tInitialised with file name: " << FILE_NAME << '\n';
 
     // attempt to open file and return status
-    out.open(FILE_NAME.c_str());
+    out.open(FILE_NAME);
     if(!out) return false;
     return true;
 }
@@ -40,6 +40,8 @@ pthread_t writer::run()
 
 void* writer::runner(void* arg)
 {
+    string line = "";
+
     while(true)
     {
         pthread_mutex_lock(&reader::queue_lock);
@@ -47,8 +49,6 @@ void* writer::runner(void* arg)
             // if queue is empty, await produced addition
             while(!reading_finished && writer::is_queue_empty())
                 pthread_cond_wait(&reader::item_added_signal, &reader::queue_lock);
-
-            string line = "";
 
             if(reading_finished && writer::is_queue_empty())
             {

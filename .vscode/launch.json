@@ -10,8 +10,8 @@
 			"args": [
 				// "test.txt",
 				"25",
-				"./tests/data.512m",
-				"./512m.txt"
+				"./test/data.512m",
+				"./out/512m.txt"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
