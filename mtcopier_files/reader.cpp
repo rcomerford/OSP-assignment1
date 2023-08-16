@@ -74,10 +74,10 @@ void* reader::runner(void* arg)
                 break;
             }
         }
-        pthread_mutex_unlock(&queue_lock);
-
         // send: something has been added to the list
         pthread_cond_signal(&item_added_signal);
+
+        pthread_mutex_unlock(&queue_lock);
     }
     if(IS_DEBUG_MODE) cout << "READER THREAD:\tClosing thread with ID: " << pthread_self() << '\n';
     return nullptr;

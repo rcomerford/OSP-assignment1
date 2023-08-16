@@ -62,10 +62,10 @@ void* writer::runner(void* arg)
                 out <<  line;
             }
         }
-        pthread_mutex_unlock(&reader::queue_lock);
-
         // send: something has been removed from the list
         pthread_cond_signal(&reader::item_removed_signal);
+
+        pthread_mutex_unlock(&reader::queue_lock);
     }
 
     if(IS_DEBUG_MODE) cout << "WRITER THREAD:\tClosing thread with ID: " << pthread_self() << '\n';
