@@ -6,6 +6,7 @@
 #include <deque>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 #ifndef WRITER
 #define WRITER
@@ -14,6 +15,7 @@ using std::ofstream;
 using std::deque;
 using std::cout;
 using std::endl;
+using std::string;
 using std::ios;
 
 class writer 
@@ -24,7 +26,7 @@ class writer
 		 * Initialise the shared data for the class.
 		 */
         static bool init(
-            const char* FILE_NAME, 
+            const string& FILE_NAME, 
             const unsigned& MAX_QUEUE_SIZE, 
             const bool& IS_DEBUG_MODE);
 
@@ -41,8 +43,8 @@ class writer
         /**
          * Queue manipulation.
         */
-        static void append(const char* line);
-        static void remove(char* line);
+        static void append(const string& line);
+        static void remove(string& line);
 
         /**
          * Queue state.
@@ -71,7 +73,7 @@ class writer
         /**
          * Related to the queue of lines to be written.
         */
-        static deque<const char*> queue;
+        static deque<string> queue;
         static unsigned queue_size;
         static unsigned MAX_QUEUE_SIZE;
 

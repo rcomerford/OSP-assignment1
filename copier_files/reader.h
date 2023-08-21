@@ -13,7 +13,9 @@
 
 using std::cout;
 using std::endl;
+using std::string;
 using std::ifstream;
+using std::getline;
 
 class reader 
 {
@@ -23,7 +25,7 @@ class reader
 		 * Initialise the class & open file.
 		 */
         reader(
-            const char* FILE_NAME, 
+            const string& FILE_NAME, 
             writer& MAIN_WRITER);
         
         /**

@@ -23,9 +23,9 @@
 #define MAX_QUEUE_SIZE 100
 
 using std::cout;
+using std::string;
 using std::atoi;
 using std::isdigit;
-using std::string;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
