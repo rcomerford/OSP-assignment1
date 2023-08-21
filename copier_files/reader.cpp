@@ -4,10 +4,10 @@
 
 #include "reader.h"
 
-reader::reader(const string& FILE_NAME, writer& MAIN_WRITER) : the_writer(MAIN_WRITER)
+reader::reader(const string& FILE_NAME, writer& MAIN_WRITER) : main_writer(MAIN_WRITER)
 {
-    cout << "READER INIT:\tInitialised with file name: " << FILE_NAME << '\n';
-    in.open(FILE_NAME.c_str(), std::ios::in);
+    cout << "READER:\tInitialised with file name: " << FILE_NAME << '\n';
+    in.open(FILE_NAME.c_str());
 }
 
 void reader::run()
@@ -18,19 +18,15 @@ void reader::run()
 
         // repeatedly read next line of characters from input stream.
         while (getline(in, current_line)) 
-            handleLine(current_line);
+
+            // and add to writer queue.
+            main_writer.append(current_line);
 
         in.close();
     } 
     else
     {
         // if file failed to open
-        cout << "ERROR:\t" << "Files failed to open." << '\n';
+        cout << "ERROR:\t" << "Input file failed to open." << '\n';
     }
-}
-
-void reader::handleLine(const string& line)
-{
-    // add line to writer queue.
-    the_writer.append(line);
 }

@@ -20,22 +20,30 @@ using std::getline;
 class reader 
 {
     public:
-        /* create a reader that reads each line of the file and appends it to the
-        * writer's queue
-        */
-        reader(const string& file_name, writer& my_writer);
+
+		/**
+		 * Initialise the class & open file.
+		 */
+        reader(
+            const string& FILE_NAME, 
+            writer& MAIN_WRITER);
         
-        /* perform the reading from the file */
+        /**
+		 * Launches single threaded reading.
+		 */
         void run();
 
-        /**
-         * 
-        */
-        void handleLine(const string& line);
-
     private:
+
+        /**
+         * The input stream doing the reading.
+        */
         ifstream in;
-        writer& the_writer;
+
+        /**
+         * The writer object doing the writing.
+        */
+        writer& main_writer;
 };
 
 #endif // READER

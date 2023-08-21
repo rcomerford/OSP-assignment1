@@ -6,7 +6,7 @@
 
 writer::writer(const string& FILE_NAME)
 {
-    cout << "WRITER INIT:\tInitialised with file name: " << FILE_NAME << '\n';
+    cout << "WRITER:\tInitialised with file name: " << FILE_NAME << '\n';
     out.open(FILE_NAME);
 }
 
@@ -14,6 +14,20 @@ void writer::run()
 {
     while(!queue.empty())
         writeNextLine();
+
+    if(out.is_open()) 
+    {
+        // write lines from queue until empty
+        while(!queue.empty())
+            writeNextLine();
+
+        out.close();
+    } 
+    else
+    {
+        // if file failed to open
+        cout << "ERROR:\t" << "Output file failed to open." << '\n';
+    }
 }
 
 void writer::append(const string& line)

@@ -14,13 +14,14 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::ofstream;
+using std::deque;
 
 class writer 
 {
     public:
+    
         /**
-         * Creates a "writer" instance.
-         * file_name - The file name argument given in the cli.
+		 * Initialise the class & open file.
         */
         writer(const string& file_name);
 
@@ -31,25 +32,25 @@ class writer
 
         /**
          * Appends a line to the queue to be written.
-         * line - The line to be added to the queue.
         */
         void append(const string& line);
 
         /**
-         * 
+         * Handles writing a single line to the output string.
         */
-       void writeNextLine();
+        void writeNextLine();
 
     private:
+
         /**
          * The output stream doing the writing.
         */
-        std::ofstream out;
+        ofstream out;
 
         /**
          * The queue of lines to be written.
         */
-        std::deque<string> queue;
+        deque<string> queue;
 };
 
 #endif //WRITER
