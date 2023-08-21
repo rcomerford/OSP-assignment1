@@ -10,7 +10,6 @@
 #ifndef WRITER
 #define WRITER
 
-using std::string;
 using std::cout;
 using std::endl;
 using std::ofstream;
@@ -23,7 +22,7 @@ class writer
         /**
 		 * Initialise the class & open file.
         */
-        writer(const string& file_name);
+        writer(const char* file_name);
 
         /**
          * Does the actual writing from the queue of lines.
@@ -33,7 +32,7 @@ class writer
         /**
          * Appends a line to the queue to be written.
         */
-        void append(const string& line);
+        void append(const char* line);
 
         /**
          * Handles writing a single line to the output string.
@@ -50,7 +49,7 @@ class writer
         /**
          * The queue of lines to be written.
         */
-        deque<string> queue;
+        deque<const char*> queue;
 };
 
 #endif //WRITER

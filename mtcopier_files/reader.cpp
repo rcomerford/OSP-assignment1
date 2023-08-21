@@ -5,6 +5,11 @@
 #include "reader.h"
 #include "writer.h"
 
+#define KILOBYTE 1024
+#define MEGABYTE 1048576
+
+#define BUFFER_LENGTH KILOBYTE
+
 // "constant" static variables
 bool reader::IS_DEBUG_MODE;
 
@@ -14,7 +19,7 @@ pthread_mutex_t reader::queue_lock;
 pthread_cond_t reader::item_removed_signal;
 pthread_cond_t reader::item_added_signal;
 
-bool reader::init(const string& FILE_NAME, const bool& DEBUG_MODE_ARG)
+bool reader::init(const char* FILE_NAME, const bool& DEBUG_MODE_ARG)
 {
     // static variables
     IS_DEBUG_MODE = DEBUG_MODE_ARG;
@@ -26,7 +31,7 @@ bool reader::init(const string& FILE_NAME, const bool& DEBUG_MODE_ARG)
     pthread_cond_init(&item_added_signal, nullptr);
 
     // attempt to open file and return status
-    in.open(FILE_NAME.c_str());
+    in.open(FILE_NAME);
     if(!in) return false;
     return true;
 }
@@ -42,7 +47,7 @@ pthread_t reader::run()
 
 void* reader::runner(void* arg)
 {
-    string line = "";
+    char* buffer = new char[BUFFER_LENGTH];
 
     while(!writer::reading_finished)
     {
@@ -53,12 +58,12 @@ void* reader::runner(void* arg)
                 pthread_cond_wait(&item_removed_signal, &queue_lock);
 
             // read file and add to queue
-            if(getline(in, line))
+            if(in.read(buffer, BUFFER_LENGTH))
             {
                 if(IS_DEBUG_MODE) cout << "READER THREAD:\tRead new line" << '\n';
                 
                 // add newly read line to output queue
-                writer::append(line);
+                writer::append(buffer);
 
                 // append newline character to output queue unless at final line
                 if(in.good())

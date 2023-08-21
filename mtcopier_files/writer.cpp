@@ -5,18 +5,23 @@
 #include "writer.h"
 #include "reader.h"
 
+#define KILOBYTE 1024
+#define MEGABYTE 1048576
+
+#define BUFFER_LENGTH KILOBYTE
+
 // "constant" static variables
 bool writer::IS_DEBUG_MODE;
 unsigned writer::MAX_QUEUE_SIZE;
 
 // initialise static variables
 ofstream writer::out;
-deque<string> writer::queue;
+deque<const char*> writer::queue;
 unsigned writer::queue_size = 0;
 
 bool writer::reading_finished = false;
 
-bool writer::init(const string& FILE_NAME, const unsigned& MAX_QUEUE_ARG, const bool& DEBUG_MODE_ARG)
+bool writer::init(const char* FILE_NAME, const unsigned& MAX_QUEUE_ARG, const bool& DEBUG_MODE_ARG)
 {
     // static variables
     MAX_QUEUE_SIZE = MAX_QUEUE_ARG;
@@ -40,7 +45,7 @@ pthread_t writer::run()
 
 void* writer::runner(void* arg)
 {
-    string line = "";
+    char* buffer = new char[BUFFER_LENGTH];
 
     while(true)
     {
@@ -58,8 +63,8 @@ void* writer::runner(void* arg)
             else
             {
                 // write file and remove from queue
-                writer::remove(line);
-                out <<  line;
+                writer::remove(buffer);
+                out <<  buffer;
             }
         }
         // send: something has been removed from the list
@@ -82,7 +87,7 @@ bool writer::is_queue_empty()
     return queue_size == 0;
 }
 
-void writer::append(const string& line)
+void writer::append(const char* line)
 {
     queue.push_back(line);
 
@@ -90,9 +95,9 @@ void writer::append(const string& line)
     queue_size++;
 }
 
-void writer::remove(string& line)
+void writer::remove(char* line)
 {
-    line = queue.front();
+    line = (char*)queue.front();
     queue.pop_front();
     queue_size--;
 }

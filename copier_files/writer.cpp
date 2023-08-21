@@ -4,7 +4,12 @@
 
 #include "writer.h"
 
-writer::writer(const string& FILE_NAME)
+#define KILOBYTE 1024
+#define MEGABYTE 1048576
+
+#define BUFFER_LENGTH KILOBYTE
+
+writer::writer(const char* FILE_NAME)
 {
     cout << "WRITER:\tInitialised with file name: " << FILE_NAME << '\n';
     out.open(FILE_NAME);
@@ -30,18 +35,18 @@ void writer::run()
     }
 }
 
-void writer::append(const string& line)
+void writer::append(const char* line)
 {
     queue.push_back(line);
 }
 
 void writer::writeNextLine()
 {
-    string next_string = queue.front();
-    out << next_string;
+    char* buffer = (char*)queue.front();
+    out << buffer;
     queue.pop_front();  
 
     // output endline char for every line except the last.
     if(!queue.empty())
-        out << '\n';
+        out << "\n";
 }

@@ -5,7 +5,6 @@
 #include <pthread.h>
 #include <fstream>
 #include <iostream>
-#include <string>
 
 #ifndef READER
 #define READER
@@ -13,7 +12,6 @@
 using std::cout;
 using std::endl;
 using std::ifstream;
-using std::string;
 using std::ios;
 
 class reader
@@ -24,7 +22,7 @@ class reader
 		 * Initialise the shared data for the class.
 		 */
 		static bool init(
-			const string& FILE_NAME, 
+			const char* FILE_NAME, 
 			const bool& IS_DEBUG_MODE);
 
 		/**

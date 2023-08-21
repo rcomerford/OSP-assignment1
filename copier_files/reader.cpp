@@ -4,23 +4,28 @@
 
 #include "reader.h"
 
-reader::reader(const string& FILE_NAME, writer& MAIN_WRITER) : main_writer(MAIN_WRITER)
+#define KILOBYTE 1024
+#define MEGABYTE 1048576
+
+#define BUFFER_LENGTH KILOBYTE
+
+reader::reader(const char* FILE_NAME, writer& MAIN_WRITER) : main_writer(MAIN_WRITER)
 {
     cout << "READER:\tInitialised with file name: " << FILE_NAME << '\n';
-    in.open(FILE_NAME.c_str());
+    in.open(FILE_NAME);
 }
 
 void reader::run()
 {
     if(in.is_open()) 
     {
-        string current_line;
+        char* buffer = new char[BUFFER_LENGTH];
 
         // repeatedly read next line of characters from input stream.
-        while (getline(in, current_line)) 
+        while(in.read(buffer, BUFFER_LENGTH)) 
 
             // and add to writer queue.
-            main_writer.append(current_line);
+            main_writer.append(buffer);
 
         in.close();
     } 
