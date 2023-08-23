@@ -5,6 +5,7 @@
 #include "writer.h"
 #include "reader.h"
 
+// global variables
 extern bool IS_DEBUG_MODE;
 extern bool IS_TIMING_MODE;
 
@@ -111,8 +112,10 @@ void* writer::runner(void* arg)
 
                 // write file and remove from queue
                 writer::remove(line);
+                // write to output
+                out << line;
 
-                out <<  line;
+                if(IS_DEBUG_MODE) cout << "WRITER THREAD:\tWritten new line." << '\n';
 
                 if(IS_TIMING_MODE)
                 {

@@ -5,6 +5,7 @@
 #include "writer.h"
 #include "reader.h"
 
+// global variables
 extern bool IS_DEBUG_MODE;
 extern bool IS_TIMING_MODE;
 
@@ -106,7 +107,7 @@ void* reader::runner(void* arg)
                     read_timing += duration;
                 }
 
-                if(IS_DEBUG_MODE) cout << "READER THREAD:\tRead new line" << '\n';
+                if(IS_DEBUG_MODE) cout << "READER THREAD:\tRead new line." << '\n';
                 
                 // add newly read line to output queue
                 writer::append(line);

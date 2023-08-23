@@ -4,22 +4,24 @@
 
 #include "writer.h"
 
+// global variables
+extern bool IS_DEBUG_MODE;
+
 writer::writer(const string& FILE_NAME)
 {
-    cout << "WRITER:\tInitialised with file name: " << FILE_NAME << '\n';
+    if(IS_DEBUG_MODE) cout << "WRITER:\tTrying to initialise with file name: " << FILE_NAME << '\n';
     out.open(FILE_NAME);
 }
 
 void writer::run()
 {
-    while(!queue.empty())
-        writeNextLine();
-
     if(out.is_open()) 
     {
         // write lines from queue until empty
         while(!queue.empty())
+        {
             writeNextLine();
+        }
 
         out.close();
     } 
@@ -43,5 +45,7 @@ void writer::writeNextLine()
 
     // output endline char for every line except the last.
     if(!queue.empty())
-        out << '\n';
+        out << endl;
+
+    if(IS_DEBUG_MODE) cout << "WRITER:\tWritten new line." << '\n';
 }

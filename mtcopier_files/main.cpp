@@ -28,10 +28,11 @@ using std::atoi;
 using std::isdigit;
 using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
-using std::chrono::milliseconds;
+using std::chrono::microseconds;
 
-// GLOBAL VARIABLES
-
+/**
+ * Global variables.
+*/
 bool IS_DEBUG_MODE = false;
 bool IS_TIMING_MODE = false;
 
@@ -63,7 +64,7 @@ int main(int argc, char** argv)
         argc < MIN_NUM_ARGS || 
         argc > MAX_NUM_ARGS
     ){
-        cout << "ERROR:\t" << "Program must be run in format \"./copier <numthreads> <infile> <outfile> [-d]\"." << '\n';
+        cout << "ERROR:\t" << "Program must be run in format \"./mtcopier <numthreads> <infile> <outfile> [-t] [-d]\"." << '\n';
     }
     else if(
         !isNumber(argv[1]) || 
@@ -101,9 +102,8 @@ int main(int argc, char** argv)
         double signal_time = 0;
         double read_time = 0;
         double write_time = 0;
-
-        // START TIMING
-        auto start = high_resolution_clock::now();;
+        // std::chrono used here so as not to duplicate thread clocks
+        auto total_start = high_resolution_clock::now();
 
         // command line variables
         const unsigned NUM_THREADS = atoi(argv[1]);
@@ -162,10 +162,11 @@ int main(int argc, char** argv)
             delete[] (double*)writer_result;
         }
 
-
         // TIMING END
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<milliseconds>(stop - start);
+        auto total_end = high_resolution_clock::now();
+        // microseconds used for higher fidelity once converted to milli
+        auto micro_total = duration_cast<microseconds>(total_end - total_start);
+        double total = (double)micro_total.count() / MILLISECOND_MULTIPLIER;
 
         if(IS_TIMING_MODE)
         {
@@ -193,14 +194,14 @@ int main(int argc, char** argv)
             cout << "TIMING:\t" << "TOT Awaiting Signal: " << total_signal << MILLISECOND_SYMBOL << '\n';
             cout << "TIMING:\t" << "TOT Reading:         " << tot_read_time << MILLISECOND_SYMBOL << '\n';
             cout << "TIMING:\t" << "TOT Writing:         " << tot_write_time << MILLISECOND_SYMBOL << '\n';
-            cout << "TIMING:\t" << "Total:               " << duration.count() << MILLISECOND_SYMBOL << '\n';
+            cout << "TIMING:\t" << "Total:               " << total << MILLISECOND_SYMBOL << '\n';
             cout << "--------------------------------------------------" << "\n";
 
         }
         else
         {
-
-            cout << "MAIN:\t" << "Total time: " << duration.count() << MILLISECOND_SYMBOL << '\n';
+            // always display total time to quantify clock() overhead
+            cout << "MAIN:\t" << "Total time: " << total << MILLISECOND_SYMBOL << '\n';
         }
 
         cout << "MAIN:\t" << "Done!" << '\n';
