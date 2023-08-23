@@ -7,7 +7,7 @@ Built by Ryan Comerford (s3945787)
 - Compile only `mtcopier` all using `make mtcopier`.
 - Clean build files using `make clean`.
 
-> NOTE: when writing to files within a folder, folder must already be present. Neither program will create a folder to store an output file. Instead, behavior will be: `ERROR:    Files failed to open.`
+> NOTE: when writing to files within a folder, folder must already be present. Neither program will create a folder to store an output file. Instead, behavior will be: `ERROR: Files failed to open.`
 
 ## 🔴 Single-Threaded ("copier")
 ``` bash
