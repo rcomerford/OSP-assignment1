@@ -23,9 +23,7 @@ class reader
 		/**
 		 * Initialise the shared data for the class.
 		 */
-		static bool init(
-			const string& FILE_NAME, 
-			const bool& IS_DEBUG_MODE);
+		static bool init(const string& FILE_NAME);
 
 		/**
 		 * Does the setup for and launches the thread.
@@ -45,11 +43,6 @@ class reader
 		static pthread_cond_t item_added_signal;
 
 	private:
-
-		/**
-		 * Dictates whether the program threads output status updates. 
-		*/
-		static bool IS_DEBUG_MODE;
 
         /**
          * The stream doing the reading.

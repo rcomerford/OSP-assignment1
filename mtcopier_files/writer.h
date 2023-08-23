@@ -27,8 +27,7 @@ class writer
 		 */
         static bool init(
             const string& FILE_NAME, 
-            const unsigned& MAX_QUEUE_SIZE, 
-            const bool& IS_DEBUG_MODE);
+            const unsigned& MAX_QUEUE_SIZE);
 
         /**
          * Does the setup for and launches the thread.
@@ -58,12 +57,16 @@ class writer
         static bool reading_finished;
         static void mark_reading_finished();
 
-    private:
-
 		/**
-		 * Dictates whether the program threads output status updates. 
+		 * Timing variables.
 		*/
-		static bool IS_DEBUG_MODE;
+		static clock_t running_timing_lock; 
+		static unsigned running_total_lock;
+		static clock_t running_timing_signal; 
+		static unsigned running_total_signal;
+		static clock_t running_timing_write; 
+
+    private:
 
         /**
          * The output stream doing the writing.
