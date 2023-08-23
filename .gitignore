@@ -32,5 +32,10 @@ test/
 # Output files
 out/
 
+# Batch testing files
+results.txt
+results.parse.py
+results.template.csv
+
 #vscode config
 vscode/
